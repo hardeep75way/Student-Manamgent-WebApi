@@ -5,9 +5,9 @@ namespace StudentManagement.Mappings;
 
 public static class StudentMapper
 {
-    public static StudentDTOs ToDto(Student student)
+    public static StudentDto ToDto(Student student)
     {
-        return new StudentDTOs()
+        return new StudentDto()
         {
             Id = student.Id,
             Name = student.Name,
@@ -16,7 +16,7 @@ public static class StudentMapper
         };
     }
     
-    public static Student ToEntity(StudentDTOs dto)
+    public static Student ToEntity(StudentDto dto)
     {
         return new Student
         {

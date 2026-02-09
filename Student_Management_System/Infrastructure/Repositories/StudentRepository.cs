@@ -14,39 +14,39 @@ public class StudentRepository : IStudentRepository
         _context = context;
     }
 
-    public Task<List<Student>> GetAllStudentsAsync()
+    public Task<List<Student>> GetAllStudentsDB()
     {
         return _context.Students
             .Where(s => s.isActive)
             .ToListAsync();
     }
 
-    public Task<Student?> GetStudentByIdAsync(int id)
+    public Task<Student?> GetStudentByIdDB(int id)
     {
         return _context.Students
             .Where(s => s.isActive && s.Id == id)
             .FirstOrDefaultAsync();
     }
 
-    public Task<List<Student>> GetStudentByCourseAsync(string course)
+    public Task<List<Student>> GetStudentByCourseDB(string course)
     {
         return _context.Students
             .Where(s => s.isActive && s.Course == course)
             .ToListAsync();
     }
 
-    public async Task AddStudentAsync(Student student)
+    public async Task AddStudentDB(Student student)
     {
         await _context.Students.AddAsync(student);
     }
 
-    public Task UpdateStudentAsync(Student student)
+    public Task UpdateStudentDB(Student student)
     {
         _context.Students.Update(student);
         return Task.CompletedTask;
     }
 
-    public async Task DeleteStudentAsync(int id)
+    public async Task DeleteStudentDB(int id)
     {
         var student = await _context.Students.FindAsync(id);
         if (student != null)
@@ -56,7 +56,7 @@ public class StudentRepository : IStudentRepository
         }
     }
     
-    public async Task AddRangeAsync(List<Student> students)
+    public async Task BulkStudentsDB(List<Student> students)
     {
         await _context.Students.AddRangeAsync(students);
     }

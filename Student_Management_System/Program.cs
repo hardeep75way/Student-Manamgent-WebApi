@@ -4,7 +4,7 @@ using StudentManagement.Repository;
 using StudentManagement.Services;
 using StudentManagement.Services.Interfaces;
 using OfficeOpenXml;
-
+using Student_Management_System.Middleware;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,7 +17,7 @@ builder.Services.AddSwaggerGen();
 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
 
-var connectionString = builder.Configuration.GetConnectionString("Default");
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 if (string.IsNullOrWhiteSpace(connectionString))
     throw new InvalidOperationException("Missing ConnectionStrings:Default in configuration.");
 
@@ -27,7 +27,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddScoped<IStudentService, StudentService>();
-
+builder.Services.AddScoped<GlobalExceptionHandler>();
 
 var app = builder.Build();
 
@@ -38,6 +38,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseMiddleware<GlobalExceptionHandler>();
 
 app.MapControllers();
 

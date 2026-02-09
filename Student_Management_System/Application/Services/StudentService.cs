@@ -16,21 +16,21 @@ namespace StudentManagement.Services
             _studentRepository = studentRepository;
         }
 
-        public async Task<List<StudentDTOs>> GetAllStudentsAsync()
+        public async Task<List<StudentDto>> GetAllStudentsAsync()
         {
-            var students = await _studentRepository.GetAllStudentsAsync();
+            var students = await _studentRepository.GetAllStudentsDB();
             return students.Select(StudentMapper.ToDto).ToList();
         }
 
-        public async Task<List<StudentDTOs>> GetStudentsByCourseAsync(string course)
+        public async Task<List<StudentDto>> GetStudentsByCourseAsync(string course)
         {
-            var students = await _studentRepository.GetStudentByCourseAsync(course);
+            var students = await _studentRepository.GetStudentByCourseDB(course);
             return students.Select(StudentMapper.ToDto).ToList();
         }
 
         public async Task<List<string>> GetAllCoursesAsync()
         {
-            var students = await _studentRepository.GetAllStudentsAsync();
+            var students = await _studentRepository.GetAllStudentsDB();
             return students
                 .Select(s => s.Course)
                 .Where(c => !string.IsNullOrWhiteSpace(c))
@@ -38,20 +38,20 @@ namespace StudentManagement.Services
                 .ToList();
         }
 
-        public async Task<StudentDTOs?> GetStudentByIdAsync(int id)
+        public async Task<StudentDto?> GetStudentByIdAsync(int id)
         {
-            var student = await _studentRepository.GetStudentByIdAsync(id);
+            var student = await _studentRepository.GetStudentByIdDB(id);
             if (student == null)
                 return null;
 
             return StudentMapper.ToDto(student);
         }
 
-        public async Task<StudentDTOs> AddStudentAsync(StudentCreateDto studentDto)
+        public async Task<StudentDto> AddStudentAsync(StudentCreateDto studentDto)
         {
             var student = StudentMapper.ToEntity(studentDto);
 
-            await _studentRepository.AddStudentAsync(student);
+            await _studentRepository.AddStudentDB(student);
             await _studentRepository.SaveAsync();
 
             return StudentMapper.ToDto(student);
@@ -59,7 +59,7 @@ namespace StudentManagement.Services
 
         public async Task<bool> UpdateStudentAsync(int id, StudentUpdateDto studentDto)
         {
-            var existing = await _studentRepository.GetStudentByIdAsync(id);
+            var existing = await _studentRepository.GetStudentByIdDB(id);
             if (existing == null)
                 return false;
 
@@ -74,11 +74,11 @@ namespace StudentManagement.Services
 
         public async Task<bool> DeleteStudentAsync(int id)
         {
-            var existing = await _studentRepository.GetStudentByIdAsync(id);
+            var existing = await _studentRepository.GetStudentByIdDB(id);
             if (existing == null)
                 return false;
 
-            await _studentRepository.DeleteStudentAsync(id);
+            await _studentRepository.DeleteStudentDB(id);
             await _studentRepository.SaveAsync();
 
             return true;
@@ -87,6 +87,8 @@ namespace StudentManagement.Services
 
         public async Task<int> ImportStudentsFromExcelAsync(Stream stream)
         {
+            
+            
             if (stream == null)
                 throw new Exception("Invalid file");
 
@@ -102,7 +104,6 @@ namespace StudentManagement.Services
 
             int rowCount = worksheet.Dimension.Rows;
 
-            // Start from row 2 (skip header)
             for (int row = 2; row <= rowCount; row++)
             {
                 var name = worksheet.Cells[row, 1].Text;
@@ -123,7 +124,7 @@ namespace StudentManagement.Services
                 });
             }
 
-            await _studentRepository.AddRangeAsync(students);
+            await _studentRepository.BulkStudentsDB(students);
             await _studentRepository.SaveAsync();
             return students.Count;
         }

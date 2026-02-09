@@ -1,8 +1,16 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace StudentManagement.DTO;
 
 public class StudentCreateDto
 {
-    public string Name { get; set; } = string.Empty;
-    public string Course { get; set; } = string.Empty;
+    [Required]
+    [StringLength(100)]
+    public string Name { get; set; }
+
+    [Required]
+    public string Course { get; set; }
+
+    [Range(0, 100)]
     public int Marks { get; set; }
 }
